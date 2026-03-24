@@ -34,8 +34,8 @@ print("📦 Installing dependencies (this may take 2-3 minutes)...")
 !apt-get update -qq && apt-get install -y openbabel autodock-vina -qq > /dev/null
 !pip install fastapi uvicorn[standard] pydantic python-multipart aiofiles openmm pdbfixer mdtraj --quiet
 
-# Install Smina
-!wget -q https://github.com/gnina/smina/releases/latest/download/smina.static -O /usr/local/bin/smina
+# Install Smina (Stable Linux Static Binary)
+!wget -q https://github.com/gnina/smina/releases/download/v2020.12.10/smina.static -O /usr/local/bin/smina
 !chmod +x /usr/local/bin/smina
 
 # Link 'vina' command

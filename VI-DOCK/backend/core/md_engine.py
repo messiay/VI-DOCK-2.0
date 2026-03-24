@@ -48,6 +48,7 @@ class MDEngine:
             print(f"DEBUG: Preparing system with FF: {forcefield}, Water: {water_model}")
             # 1. Fix PDB
             fixer = PDBFixer(filename=pdb_path)
+            fixer.removeWater() # Remove existing water to avoid template conflicts
             fixer.findMissingResidues()
             fixer.findNonstandardResidues()
             fixer.replaceNonstandardResidues()

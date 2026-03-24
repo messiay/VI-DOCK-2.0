@@ -42,7 +42,7 @@ print("✅ Environment Ready")
 
 ## 2. Start Backend Server
 
-Run this to start the FastAPI backend.
+Run this to start the FastAPI backend on port 8000.
 
 ```python
 import subprocess, sys, os
@@ -56,7 +56,7 @@ os.chdir("/content/VI-DOCK-2.0/VI-DOCK/backend")
 
 # Start Server
 server = subprocess.Popen(
-    ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"],
+    ["uvicorn", "api.main:app", "--host", "127.0.0.1", "--port", "8000"],
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT
 )
@@ -67,7 +67,7 @@ print(f"✅ Backend started (PID {server.pid})")
 
 ## 3. Expose with Cloudflare Tunnel
 
-Run this to get your public API URL. If the URL doesn't appear in 30 seconds, check the logs below manually.
+Run this to get your public API URL. If you get a 502 error, ensure Cell 2 finished successfully.
 
 ```python
 import subprocess, threading, time, re
@@ -77,14 +77,14 @@ tunnel_url = None
 def run_tunnel():
     global tunnel_url
     proc = subprocess.Popen(
-        ["/usr/local/bin/cloudflared", "tunnel", "--url", "http://localhost:8000"],
+        ["/usr/local/bin/cloudflared", "tunnel", "--url", "http://127.0.0.1:8000"],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True
     )
     print("Starting tunnel... logs will appear below:")
     for line in proc.stdout:
-        print(line, end="") # Direct log feedback
+        print(line, end="") # Live feedback
         match = re.search(r"https://[\w-]+\.trycloudflare\.com", line)
         if match:
             tunnel_url = match.group(0)

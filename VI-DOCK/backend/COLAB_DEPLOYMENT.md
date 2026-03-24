@@ -1,116 +1,101 @@
-# Google Colab Backend Guide for VI DOCK Pro 3.1
+# Google Colab Backend Setup - VI DOCK 2.0
 
-This guide provides a single script to host your VI DOCK backend on Google Colab for free with **4 vCPUs** and high-speed docking.
+Follow these steps to run the backend on Google Colab.
 
-## 1. Open Google Colab
-Go to [colab.research.google.com](https://colab.research.google.com) and create a **New Notebook**.
+## 1. Environment Setup
 
-## 2. Copy and Paste this Code
-Copy the entire block below into the first cell of your Colab notebook and run it (Play button).
-
-> [!IMPORTANT]
-> **Copy ONLY the code between the lines.** Do NOT copy the triple backticks (```python) at the start or end.
+Run this cell to clone the repository and install dependencies.
 
 ```python
-# === 1. Install System & Molecular Tools ===
-print("Installing OpenBabel and system libraries...")
-!apt-get update -qq
-!apt-get install -y -qq openbabel libxrender1 libxext6 libgl1-mesa-glx > /dev/null
-
-# === 2. Install Python Dependencies ===
-print("Installing Python dependencies (FastAPI, RDKit, Meeko)...")
-!pip install -q fastapi uvicorn[standard] python-multipart rdkit meeko requests httpx
-
-# === 3. Clone the Project Code ===
 import os
-if not os.path.exists('simdock-pro'):
-    print("Cloning the repository...")
-    !git clone https://github.com/messiay/simdock-pro.git
+
+# Clone or Update Repo
+if not os.path.exists("/content/VI-DOCK-2.0"):
+    !git clone https://github.com/messiay/VI-DOCK-2.0 /content/VI-DOCK-2.0
 else:
-    print("Repository already exists. Updating...")
-    %cd simdock-pro
+    %cd /content/VI-DOCK-2.0
     !git pull
-    %cd ..
 
-# Navigate to backend directory
-os.chdir('/content/simdock-pro/VI-DOCK/backend')
+%cd /content/VI-DOCK-2.0/VI-DOCK/backend
 
-# === 4. Download Vina and Smina Binaries ===
-print("Downloading Vina and Smina...")
-!mkdir -p bin
-!wget -q https://github.com/ccsb-scripps/AutoDock-Vina/releases/download/v1.2.5/vina_1.2.5_linux_x86_64 -O bin/vina
-!wget -q https://github.com/gnina/smina/releases/download/v2020.12.10/smina.static -O bin/smina
-!chmod +x bin/vina bin/smina
+# Install Python Dependencies
+!pip install fastapi uvicorn[standard] pydantic python-multipart aiofiles --quiet
+!pip install openmm pdbfixer mdtraj --quiet
 
-# === 5. Setup Network Tunnel (Cloudflare - More Stable) ===
-print("Downloading Cloudflare Tunnel...")
-!wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
-!chmod +x cloudflared-linux-amd64
+# Install System Tools & Docking Engines (Compatible with Colab Linux)
+!apt-get update -qq
+!apt-get install -y openbabel autodock-vina --quiet 2>/dev/null
 
-# === 6. Start the API Server ===
-import os
-import subprocess
-import time
-import sys
+# Install Smina
+!wget -q https://github.com/gnina/smina/releases/latest/download/smina.static -O /usr/local/bin/smina
+!chmod +x /usr/local/bin/smina
 
-def print_flush(text):
-    print(text)
-    sys.stdout.flush()
+# Link 'vina' if needed
+!if ! command -v vina &> /dev/null; then ln -s $(command -v autodock-vina) /usr/local/bin/vina; fi
 
-print_flush("\n--- Cleaning up previous runs ---")
-os.system("pkill -f uvicorn")
-os.system("pkill -f cloudflared")
-time.sleep(2)
+# Install Cloudlared
+!wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -O /usr/local/bin/cloudflared
+!chmod +x /usr/local/bin/cloudflared
 
-print_flush("\nStarting VI DOCK API Server on port 8123...")
-# Start uvicorn in the background with nohup and save logs
-os.system("nohup uvicorn api.main:app --host 0.0.0.0 --port 8123 > server.log 2>&1 &")
-
-# Wait for server to be ready
-time.sleep(5)
-
-# Verify server is running (with a 5 second timeout so it never hangs)
-verify_cmd = "curl -m 5 -s http://localhost:8123/ > /dev/null"
-if os.system(verify_cmd) != 0:
-    print_flush("⚠️ SERVER FAILED TO START! Checking logs...")
-    os.system("cat server.log")
-else:
-    print_flush("✅ Server is running locally on port 8123")
-
-# === 7. Expose it to the Web ===
-print_flush("\n--- DEPLOYMENT COMPLETE ---")
-print_flush("Starting Cloudflare secure tunnel...")
-
-# Run Cloudflare in the background and save logs
-os.system("nohup ./cloudflared-linux-amd64 tunnel --url http://127.0.0.1:8123 > cloudflare.log 2>&1 &")
-
-time.sleep(5)
-
-# Parse the log to find the URL
-try:
-    with open("cloudflare.log", "r") as f:
-        log_content = f.read()
-        import re
-        url_match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', log_content)
-        if url_match:
-            print_flush("\n" + "="*50)
-            print_flush(f"✅ YOUR PUBLIC API URL IS:\n{url_match.group(0)}")
-            print_flush("="*50)
-            print_flush("\n📋 Copy the link above and paste it into Vercel!")
-        else:
-            print_flush("\n⚠️ Still waiting for URL... Here are the recent logs:")
-            os.system("cat cloudflare.log | tail -n 10")
-except Exception as e:
-    print_flush(f"Error reading Cloudflare log: {e}")
-
-# Keep the cell running so the server stays alive
-while True:
-    time.sleep(60)
+print("✅ Environment Ready")
 ```
 
-## 3. How to Connect
-1.  When you run the script, look for the big box that says `✅ YOUR PUBLIC API URL IS:`
-2.  **Update Frontend**: Copy that `.trycloudflare.com` URL (make sure not to include any extra spaces) and set it as your `VITE_API_BASE_URL` in Vercel or your local `.env` file.
+## 2. Start Backend Server
 
-## ⚠️ Important
-Keep the Colab tab open. If the notebook disconnects, the backend will stop. You can reconnect and run the cell again at any time to get a new URL.
+Run this to start the FastAPI backend.
+
+```python
+import subprocess, sys, os
+
+sys.path.insert(0, "/content/VI-DOCK-2.0/VI-DOCK/backend")
+os.chdir("/content/VI-DOCK-2.0/VI-DOCK/backend")
+
+# Kill previous instances
+!pkill -f uvicorn
+!pkill -f cloudflared
+
+# Start Server
+server = subprocess.Popen(
+    ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT
+)
+
+import time; time.sleep(5)
+print(f"✅ Backend started (PID {server.pid})")
+```
+
+## 3. Expose with Cloudflare Tunnel
+
+Run this to get your public API URL.
+
+```python
+import subprocess, threading, time, re
+
+tunnel_url = None
+
+def run_tunnel():
+    global tunnel_url
+    proc = subprocess.Popen(
+        ["/usr/local/bin/cloudflared", "tunnel", "--url", "http://localhost:8000"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True
+    )
+    for line in proc.stdout:
+        match = re.search(r"https://[\w-]+\.trycloudflare\.com", line)
+        if match:
+            tunnel_url = match.group(0)
+            print(f"\n🌐 YOUR BACKEND URL: {tunnel_url}")
+            break
+
+threading.Thread(target=run_tunnel, daemon=True).start()
+
+# Wait for URL
+for _ in range(30):
+    if tunnel_url: break
+    time.sleep(1)
+
+if not tunnel_url:
+    print("⚠️ Tunnel failed. Check Cloudflare logs.")
+```

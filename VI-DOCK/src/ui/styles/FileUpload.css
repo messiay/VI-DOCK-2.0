@@ -1,0 +1,129 @@
+.file-upload {
+    margin-bottom: 20px;
+}
+
+.file-upload-header {
+    margin-bottom: 10px;
+}
+
+.file-upload-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.optional-badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 2px 8px;
+    background: rgba(0, 150, 255, 0.1);
+    color: #0096ff;
+    border-radius: 10px;
+}
+
+.file-dropzone {
+    border: 2px dashed rgba(0, 150, 255, 0.3);
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: rgba(0, 150, 255, 0.02);
+}
+
+.file-dropzone:hover {
+    border-color: rgba(0, 150, 255, 0.5);
+    background: rgba(0, 150, 255, 0.05);
+}
+
+.dropzone-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.dropzone-icon {
+    font-size: 2.5rem;
+    opacity: 0.6;
+}
+
+.dropzone-text {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.file-browse {
+    color: #0096ff;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.file-browse:hover {
+    color: #0077cc;
+}
+
+.dropzone-formats {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.file-uploaded {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(0, 200, 100, 0.08) 0%, rgba(0, 150, 255, 0.08) 100%);
+    border: 1px solid rgba(0, 200, 100, 0.2);
+    border-radius: 12px;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.file-icon {
+    font-size: 1.8rem;
+}
+
+.file-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.file-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.file-format {
+    font-size: 0.75rem;
+    color: #00c864;
+    font-weight: 600;
+}
+
+.remove-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 100, 100, 0.1);
+    color: #ff6b6b;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.remove-btn:hover {
+    background: rgba(255, 100, 100, 0.2);
+    transform: scale(1.1);
+}

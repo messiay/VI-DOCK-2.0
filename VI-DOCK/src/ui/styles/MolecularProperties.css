@@ -1,0 +1,156 @@
+.molecular-properties {
+    background: var(--bg-surface-secondary);
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid var(--border-divider);
+    box-shadow: var(--shadow-panel);
+    margin-top: 12px;
+}
+
+.properties-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.properties-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.drug-likeness-badge {
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.status-pass,
+.status-warning,
+.status-fail {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--text-secondary);
+}
+
+.status-pass::before {
+    content: '● ';
+    color: #32d74b;
+}
+
+.status-warning::before {
+    content: '● ';
+    color: #ffd60a;
+}
+
+.status-fail::before {
+    content: '● ';
+    color: #ff453a;
+}
+
+.properties-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.property-item {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px solid var(--glass-border);
+}
+
+.property-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.property-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    font-variant-numeric: tabular-nums;
+}
+
+.property-unit {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-left: 2px;
+}
+
+.lipinski-section {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid var(--glass-border);
+}
+
+.lipinski-section h4 {
+    margin: 0 0 10px 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.lipinski-rules {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.rule {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+
+.rule.pass,
+.rule.fail {
+    background: transparent;
+    color: var(--text-primary);
+    border-color: var(--border-divider);
+}
+
+.rule.pass .rule-icon {
+    color: #32d74b;
+}
+
+.rule.fail .rule-icon {
+    color: #ff453a;
+}
+
+.rule-icon {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.violations-count {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: center;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-divider);
+}

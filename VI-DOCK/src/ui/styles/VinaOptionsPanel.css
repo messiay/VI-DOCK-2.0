@@ -1,0 +1,114 @@
+.vina-options-panel {
+    background: var(--glass-regular);
+    backdrop-filter: var(--blur-md);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.vina-options-panel .panel-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.option-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.option-item label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.option-item input {
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.option-item input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(47, 172, 178, 0.2);
+}
+
+.option-hint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.collapsible-section {
+    border-top: 1px solid var(--glass-border);
+    margin-top: 14px;
+    padding-top: 10px;
+}
+
+.section-toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    cursor: pointer;
+}
+
+.section-toggle:hover {
+    color: var(--secondary-color);
+}
+
+.toggle-icon {
+    font-size: 0.7rem;
+}
+
+.section-content {
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+.checkbox-option label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}

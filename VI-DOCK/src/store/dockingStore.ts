@@ -80,7 +80,7 @@ interface DockingStore extends DockingState {
 
 export const useDockingStore = create<DockingStore>()(
     persist(
-        (set: any) => ({
+        (set) => ({
             // Initial state
             receptorFile: null,
             ligandFile: null,
@@ -101,48 +101,50 @@ export const useDockingStore = create<DockingStore>()(
             resetViewTrigger: 0,
 
             activeTab: 'landing',
-            mdParams: { ...defaultMDParams },
 
             // Visual Settings Defaults
             showBox: true,
             showGrid: true,
             showAxes: true,
 
-            // Actions
-            setReceptorFile: (file: MoleculeFile | null) => set({ receptorFile: file, result: null, selectedPose: 0 }),
-            setLigandFile: (file: MoleculeFile | null) => set({ ligandFile: file, result: null, selectedPose: 0 }),
-            setCorrectPoseFile: (file: MoleculeFile | null) => set({ correctPoseFile: file }),
-            setDockingEngine: (engine: DockingEngine) => set({ dockingEngine: engine }),
+            // MD defaults
+            mdParams: { ...defaultMDParams },
 
-            setParams: (params: Partial<DockingParams>) => set((state: DockingState) => ({
+            // Actions
+            setReceptorFile: (file) => set({ receptorFile: file, result: null, selectedPose: 0 }),
+            setLigandFile: (file) => set({ ligandFile: file, result: null, selectedPose: 0 }),
+            setCorrectPoseFile: (file) => set({ correctPoseFile: file }),
+            setDockingEngine: (engine) => set({ dockingEngine: engine }),
+
+            setParams: (params) => set((state) => ({
                 params: { ...state.params, ...params }
             })),
             resetParams: () => set({ params: { ...defaultParams } }),
 
-            toggleVisual: (visual: 'grid' | 'axes' | 'box') => set((state: any) => {
+            toggleVisual: (visual) => set((state) => {
                 if (visual === 'grid') return { showGrid: !state.showGrid };
                 if (visual === 'axes') return { showAxes: !state.showAxes };
                 if (visual === 'box') return { showBox: !state.showBox };
                 return {};
             }),
 
-            setRunning: (isRunning: boolean) => set({ isRunning }),
-            setProgress: (progress: number) => set({ progress }),
-            setStatusMessage: (statusMessage: string) => set({ statusMessage }),
-            addConsoleOutput: (line: string) => set((state: any) => ({
+            setRunning: (isRunning) => set({ isRunning }),
+            setProgress: (progress) => set({ progress }),
+            setStatusMessage: (statusMessage) => set({ statusMessage }),
+            addConsoleOutput: (line) => set((state) => ({
                 consoleOutput: [...state.consoleOutput, line]
             })),
             clearConsoleOutput: () => set({ consoleOutput: [] }),
 
-            setResult: (result: DockingResult | null) => {
+            setResult: (result) => {
                 console.info('[SimDock] setResult called with', result?.poses?.length ?? 0, 'poses');
                 set({ result });
             },
-            setSelectedPose: (selectedPose: number) => set({ selectedPose }),
+            setSelectedPose: (selectedPose) => set({ selectedPose }),
 
-            setActiveTab: (activeTab: TabId) => set({ activeTab }),
+            setActiveTab: (activeTab) => set({ activeTab }),
 
-            setMDParams: (params: Partial<MDParams>) => set((state: any) => ({
+            setMDParams: (params) => set((state: any) => ({
                 mdParams: { ...state.mdParams, ...params }
             })),
 
@@ -166,18 +168,18 @@ export const useDockingStore = create<DockingStore>()(
             }),
 
             // View Actions
-            setViewMode: (mode: 'cartoon' | 'sticks' | 'surface') => set({ viewMode: mode }),
-            triggerResetView: () => set((state: any) => ({ resetViewTrigger: state.resetViewTrigger + 1 })),
+            setViewMode: (mode) => set({ viewMode: mode }),
+            triggerResetView: () => set((state) => ({ resetViewTrigger: state.resetViewTrigger + 1 })),
 
             // Theme State
             theme: 'light' as const,
-            toggleTheme: () => set((state: any) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
+            toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
         }),
         {
             name: 'simdock-docking-state',
             // Exclude transient state from persistence
             // Note: result is NOT persisted to avoid loading corrupted pose data
-            partialize: (state: any) => ({
+            partialize: (state) => ({
                 // Files are too large to persist in localStorage (causes freezing)
                 // receptorFile: state.receptorFile,
                 // ligandFile: state.ligandFile,

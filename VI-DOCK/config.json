@@ -1,0 +1,94 @@
+{
+    "executables": {
+        "obabel": "obabel",
+        "vina": "vina",
+        "smina": "smina",
+        "gnina": "gnina",
+        "qvina": "qvina",
+        "ad4": "autodock4",
+        "rdock": "rdock",
+        "chimerax": "chimerax",
+        "vmd": "vmd"
+    },
+    "platform_settings": {
+        "windows": {
+            "obabel": "C:\\Program Files (x86)\\OpenBabel-3.1.1\\obabel.exe",
+            "vina": "C:\\Program Files (x86)\\PyRx\\vina.exe",
+            "smina": "smina.exe",
+            "gnina": "gnina.exe",
+            "qvina": "qvina.exe",
+            "ad4": "autodock4.exe",
+            "rdock": "rdock.exe",
+            "chimerax": "C:\\Program Files\\Chimerax 1.10.1\\bin\\Chimerax.exe",
+            "vmd": "C:\\Program Files\\University of Illinois\\UMD2\\vmd.exe",
+            "create_no_window": true
+        },
+        "linux": {
+            "obabel": "obabel",
+            "vina": "vina",
+            "chimerax": "chimerax",
+            "vmd": "vmd",
+            "create_no_window": false
+        },
+        "darwin": {
+            "obabel": "obabel",
+            "vina": "vina",
+            "ledock": "ledock",
+            "vina_gpu": "vina_gpu",
+            "plants": "plants",
+            "chimerax": "chimerax",
+            "vmd": "vmd",
+            "create_no_window": false
+        }
+    },
+    "docking": {
+        "default_exhaustiveness": 8,
+        "default_refine_percentage": 10,
+        "default_box_size": [
+            25.0,
+            25.0,
+            25.0
+        ],
+        "box_padding": 5.0,
+        "adaptive_exhaustiveness_thresholds": [
+            7,
+            12
+        ],
+        "adaptive_exhaustiveness_values": [
+            8,
+            16,
+            32
+        ]
+    },
+    "file_formats": {
+        "supported_ligand_formats": [
+            ".pdb",
+            ".sdf",
+            ".mol2"
+        ],
+        "supported_receptor_formats": [
+            ".pdb"
+        ]
+    },
+    "ui": {
+        "default_mode": "Normal",
+        "default_viewer": "VMD",
+        "window_size": [
+            1200,
+            800
+        ],
+        "min_window_size": [
+            1000,
+            700
+        ]
+    },
+    "network": {
+        "pdb_download_url": "https://files.rcsb.org/download/{pdb_id}.pdb",
+        "pubchem_base_url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound",
+        "timeout": 30
+    },
+    "temp": {
+        "temp_dir_prefix": "vidock_",
+        "cleanup_on_exit": true
+    }
+}

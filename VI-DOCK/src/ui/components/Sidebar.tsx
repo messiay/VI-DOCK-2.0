@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useDockingStore } from '../../store/dockingStore';
-import type { TabId } from '../../core/types';
+import type { TabId } from '../../types';
 import {
     TestTube2,
     ClipboardList,

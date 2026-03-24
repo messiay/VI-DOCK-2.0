@@ -1,0 +1,90 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   APP.CSS - Spatial Mode Layout with Theme Support
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.app.spatial-mode {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-viewport);
+  transition: background-color var(--transition-theme);
+}
+
+.global-viewer-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background: transparent;
+  transition: background-color var(--transition-theme);
+}
+
+.ui-overlay-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+  /* Let clicks pass through to 3D world */
+}
+
+/* Re-enable pointer events for actual UI elements */
+.sidebar,
+.draggable-panel,
+.prep-panel,
+.input-panel,
+.output-workspace-panel,
+.floating-toolbar,
+.save-modal-overlay,
+.landing-overlay {
+  pointer-events: auto;
+}
+
+/* Sidebar Adjustment for Floating Layout */
+.sidebar {
+  height: 100vh;
+  width: 80px;
+  border-right: var(--border-subtle);
+  background: var(--bg-surface);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  transition:
+    background-color var(--transition-theme),
+    border-color var(--transition-theme);
+}
+
+/* Ensure inner panels don't have conflicting container styles */
+.output-workspace-panel,
+.prep-panel {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  max-width: none;
+  margin: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Input panel needs special handling for horizontal scroll */
+.input-panel {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  /* width, min-width, padding handled in InputPanel.css */
+}
+
+/* Base text color - Theme aware */
+.app {
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  transition: color var(--transition-theme);
+}

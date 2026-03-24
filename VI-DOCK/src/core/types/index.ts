@@ -8,9 +8,6 @@ export interface DockingParams {
     sizeY: number;
     sizeZ: number;
 
-    // Engine
-    dockingEngine?: 'vina' | 'smina';
-
     // Vina parameters
     cpus: number;
     exhaustiveness: number;
@@ -22,18 +19,7 @@ export interface DockingParams {
     localOnly: boolean;
     scoreOnly: boolean;
     randomizeInput: boolean;
-}
-
-// Molecular Dynamics parameters
-export interface MDParams {
-    forcefield: string;
-    waterModel: string;
-    solvate: boolean;
-    addIons: boolean;
-    tempK: number;
-    simulationTimeNs: number;
-    reportIntervalPs: number;
-    minimize: boolean;
+    dockingEngine?: 'vina' | 'smina';
 }
 
 // Docking result pose
@@ -52,11 +38,26 @@ export interface DockingResult {
     logOutput: string;
 }
 
+export interface SavedProject {
+    id: string;
+    name: string;
+    username: string;
+    timestamp: number;
+    data: {
+        receptorFile: MoleculeFile | null;
+        ligandFile: MoleculeFile | null;
+        params: DockingParams;
+        result: DockingResult | null;
+        viewMode: 'cartoon' | 'sticks' | 'surface';
+    };
+}
+
 // File data
 export interface MoleculeFile {
     name: string;
     content: string;
     format: string;
+    loading?: boolean;
 }
 
 // Application state
@@ -80,11 +81,12 @@ export interface DockingState {
     selectedPose: number;
 
     // UI
+    // UI
     activeTab: TabId;
 }
 
 // Tab definitions
-export type TabId = 'landing' | 'prep' | 'input' | 'existing' | 'running' | 'output' | 'projects' | 'batch' | 'md';
+export type TabId = 'landing' | 'prep' | 'input' | 'existing' | 'running' | 'output' | 'projects' | 'batch';
 
 export interface TabDefinition {
     id: TabId;

@@ -1,0 +1,256 @@
+.sidebar {
+    /* Collapsed state by default */
+    width: 76px;
+    min-width: 76px;
+    background: var(--bg-surface);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-right: 1px solid var(--glass-border);
+    height: 100vh;
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 1px 0 0 rgba(0, 0, 0, 0.05);
+    z-index: 50;
+    overflow: hidden;
+    transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), min-width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sidebar:hover {
+    /* Expanded state on hover */
+    width: 260px;
+    min-width: 260px;
+}
+
+.sidebar-header {
+    padding: 24px 24px;
+    border-bottom: 1px solid var(--border-divider);
+}
+
+.app-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+.logo-icon {
+    font-size: 1.8rem;
+    filter: none;
+    color: #FFFFFF;
+}
+
+.light-mode .logo-icon {
+    color: #000000;
+}
+
+/* Light Mode Shadow handled via global opacity change or specific rule if needed */
+
+.logo-text {
+    /* Clean Solid White */
+    color: var(--text-primary);
+    background: none;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: initial;
+    background-clip: text;
+}
+
+.app-subtitle {
+    margin: 4px 0 0 0;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.sidebar:hover .app-subtitle {
+    opacity: 1;
+    /* Show on expand */
+}
+
+/* Text labels hidden when collapsed */
+.logo-text,
+.tab-label,
+.footer-info,
+.start-over-btn span {
+    opacity: 0;
+    white-space: nowrap;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.sidebar:hover .logo-text,
+.sidebar:hover .tab-label,
+.sidebar:hover .footer-info,
+.sidebar:hover .start-over-btn span {
+    opacity: 1;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 24px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.nav-tab {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px;
+    margin: 0;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    /* ~15px */
+    font-weight: 500;
+    text-align: left;
+    cursor: default;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-tab:hover:not(.disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    transform: none;
+    /* No movement */
+}
+
+.light-mode .nav-tab:hover:not(.disabled) {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.nav-tab.active {
+    background: #FFFFFF;
+    color: #000000;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.light-mode .nav-tab.active {
+    background: #000000;
+    color: #FFFFFF;
+}
+
+.nav-tab.active .tab-icon,
+.nav-tab.active .tab-label {
+    color: currentColor;
+}
+
+.nav-tab.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.tab-icon {
+    font-size: 1.4rem;
+    width: 24px;
+    text-align: center;
+}
+
+.tab-label {
+    flex: 1;
+}
+
+/* Removing side indicator bar for cleaner look */
+.tab-indicator {
+    display: none;
+}
+
+.sidebar-footer {
+    padding: 16px;
+    /* Reduce padding for collapsed state */
+    border-top: 1px solid var(--border-divider);
+    background: transparent;
+}
+
+.sidebar:hover .sidebar-footer {
+    padding: 24px 16px;
+    /* Full padding on expand */
+}
+
+/* Start Over Button */
+.start-over-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.start-over-btn:hover {
+    background: #FFFFFF;
+    color: #000000;
+    border-color: #FFFFFF;
+    transform: none;
+}
+
+.light-mode .start-over-btn:hover {
+    background: #000000;
+    color: #FFFFFF;
+    border-color: #000000;
+}
+
+.footer-info {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.footer-info p {
+    margin: 4px 0;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Scroll Buttons */
+.nav-scroll-btn {
+    display: none;
+}
+
+/* Theme Toggle */
+.theme-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0 auto 16px auto;
+}
+
+.theme-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Light mode adjustments */
+.light-mode .theme-toggle-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+}

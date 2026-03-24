@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useDockingStore } from '../../store/dockingStore';
 import { 
     Settings, 
     Zap, 
     Droplets, 
-    Thermometer, 
     Clock, 
     Database,
     AlertCircle,
@@ -12,6 +11,7 @@ import {
     Loader2
 } from 'lucide-react';
 import { config as apiConfig } from '../../config';
+import { apiService } from '../../services/apiService';
 import '../styles/MDPanel.css';
 
 export function MDPanel() {
@@ -19,16 +19,16 @@ export function MDPanel() {
         mdParams, 
         setMDParams, 
         receptorFile, 
-        ligandFile, 
         setStatusMessage,
-        setRunning,
-        setProgress
+        setRunning
     } = useDockingStore();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [jobId, setJobId] = useState<string | null>(null);
     const [taskStatus, setTaskStatus] = useState<'idle' | 'running' | 'completed' | 'failed'>('idle');
     const [error, setError] = useState<string | null>(null);
+
+    // Guard: wait for Zustand persist rehydration
+    if (!mdParams) return null;
 
     const handleRunMD = async () => {
         if (!receptorFile) {
@@ -42,11 +42,25 @@ export function MDPanel() {
         setStatusMessage("Initializing Molecular Dynamics...");
 
         try {
+            // 0. Auto-create project and upload receptor to backend
+            const timestamp = new Date().getTime();
+            const projectName = `MD_Sim_${timestamp}`;
+            
+            setStatusMessage("Creating backend project...");
+            await apiService.createProject(projectName);
+            
+            setStatusMessage("Uploading receptor to Colab...");
+            const receptorBlob = new Blob([receptorFile.content], { type: 'text/plain' });
+            const receptorFileObj = new File([receptorBlob], receptorFile.name, { type: 'text/plain' });
+            await apiService.uploadFile(projectName, receptorFileObj, 'receptor');
+
             // 1. Submit Job to Colab Backend
-            // Note: In this architecture, the complex is assumed to be the receptor + ligand or just receptor
-            const response = await fetch(`${apiConfig.API_BASE_URL}/md/default/run`, {
+            const response = await fetch(`${apiConfig.API_BASE_URL}/md/${projectName}/run`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Bypass-Tunnel-Reminder': 'true' 
+                },
                 body: JSON.stringify({
                     pdb_file: receptorFile.name,
                     forcefield: mdParams.forcefield,
@@ -66,7 +80,6 @@ export function MDPanel() {
             }
 
             const data = await response.json();
-            setJobId(data.job_id);
             setRunning(true);
             
             // 2. Start polling for status
@@ -84,7 +97,9 @@ export function MDPanel() {
     const pollStatus = async (id: string) => {
         const interval = setInterval(async () => {
             try {
-                const res = await fetch(`${apiConfig.API_BASE_URL}/md/jobs/${id}`);
+                const res = await fetch(`${apiConfig.API_BASE_URL}/md/jobs/${id}`, {
+                    headers: { 'Bypass-Tunnel-Reminder': 'true' }
+                });
                 const data = await res.json();
 
                 if (data.status === 'completed') {

@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   🎱 GLOBAL THEME SYSTEM - Monochrome Pro
+   Default: DARK MODE (Carbon/Onyx/White)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+   /* ─────────────────────────────────────────────────────────────────────────
+     BACKGROUND & CANVAS (Deep Matte / Onyx)
+     ───────────────────────────────────────────────────────────────────────── */
+   --bg-canvas: #050505;
+   /* Almost pure black */
+   --bg-viewport: #000000;
+
+   /* Glass Materials (Monochrome) */
+   --bg-surface: rgba(20, 20, 20, 0.85);
+   /* Deep matte glass */
+   --bg-surface-secondary: rgba(40, 40, 40, 0.6);
+   --bg-panel-professional: rgba(10, 10, 10, 0.9);
+
+   /* Inputs */
+   --bg-input-professional: rgba(255, 255, 255, 0.07);
+   --border-input-professional: 1px solid rgba(255, 255, 255, 0.15);
+
+   --bg-highlight: rgba(255, 255, 255, 0.1);
+   --bg-elevated: #1a1a1a;
+   --bg-modal: #121212;
+
+   /* ─────────────────────────────────────────────────────────────────────────
+     ACCENT COLORS — MONOCHROME
+     ───────────────────────────────────────────────────────────────────────── */
+   --accent-primary: #FFFFFF;
+   /* Pure White Actions */
+   --accent-secondary: #A1A1AA;
+   /* Zinc 400 */
+   --accent-hover: #E4E4E5;
+   /* Light Grey Hover */
+
+   /* Status Colors - Desaturated / Functional Only */
+   --status-warning: #ffd60a;
+   --status-success: #32d74b;
+   --status-error: #ff453a;
+
+   /* ─────────────────────────────────────────────────────────────────────────
+     TEXT HIERARCHY
+     ───────────────────────────────────────────────────────────────────────── */
+   --text-primary: #FFFFFF;
+   --text-secondary: rgba(255, 255, 255, 0.6);
+   --text-disabled: rgba(255, 255, 255, 0.25);
+   --text-metadata: rgba(255, 255, 255, 0.45);
+   --text-muted: rgba(255, 255, 255, 0.35);
+   --text-mono: #A1A1AA;
+
+   /* ─────────────────────────────────────────────────────────────────────────
+     MOLECULAR COLORS (Keep functional but muted where possible)
+     ───────────────────────────────────────────────────────────────────────── */
+   --mol-carbon: #525252;
+   --mol-oxygen: #ff4f4f;
+   --mol-nitrogen: #3b82f6;
+   --mol-hydrogen: #ffffff;
+   --mol-bond-default: #737373;
+   --mol-bond-highlight: #ffffff;
+   --mol-selection-glow: rgba(255, 255, 255, 0.4);
+   --mol-docking-ghost: rgba(255, 255, 255, 0.15);
+
+   /* ─────────────────────────────────────────────────────────────────────────
+     3D VIEWPORT ELEMENTS
+     ───────────────────────────────────────────────────────────────────────── */
+   --grid-line: rgba(255, 255, 255, 0.06);
+   --axis-x: #ff453a;
+   --axis-y: #32d74b;
+   --axis-z: #0a84ff;
+   /* Keep standard axis colors for orientation */
+
+   /* ─────────────────────────────────────────────────────────────────────────
+     MATERIALS & GLASS
+     ───────────────────────────────────────────────────────────────────────── */
+   --glass-blur: blur(30px) saturate(100%);
+   /* No extra saturation */
+   --glass-border: rgba(255, 255, 255, 0.12);
+   --border-subtle: 1px solid rgba(255, 255, 255, 0.08);
+   --border-divider: 1px solid rgba(255, 255, 255, 0.08);
+
+   --shadow-panel:
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 24px 48px -12px rgba(0, 0, 0, 0.8);
+
+   --shadow-elevated:
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 32px 64px rgba(0, 0, 0, 0.9);
+
+   --shadow-glow: 0 0 20px rgba(255, 255, 255, 0.15);
+
+   --radius-panel: 16px;
+   /* Slightly tighter than 20px for "cleaner" feel */
+   --radius-sm: 8px;
+   --radius-full: 9999px;
+
+   /* ─────────────────────────────────────────────────────────────────────────
+     INTERACTION STATES
+     ───────────────────────────────────────────────────────────────────────── */
+   --outline-selection: 1px solid #FFFFFF;
+   --ring-focus: 0 0 0 2px rgba(255, 255, 255, 0.2);
+   --overlay-hover: rgba(255, 255, 255, 0.08);
+   --overlay-active: rgba(255, 255, 255, 0.16);
+   --state-disabled-opacity: 0.3;
+
+   /* ─────────────────────────────────────────────────────────────────────────
+     TRANSITIONS
+     ───────────────────────────────────────────────────────────────────────── */
+   --transition-theme: 0.3s ease;
+   --transition-slow: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+   --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.light-mode {
+   /* ─────────────────────────────────────────────────────────────────────────
+     LIGHT MODE (Alabaster / Paper)
+     ───────────────────────────────────────────────────────────────────────── */
+   --bg-canvas: #F9F9F9;
+   --bg-viewport: #F2F2F2;
+
+   --bg-surface: rgba(255, 255, 255, 0.9);
+   --bg-surface-secondary: rgba(244, 244, 245, 0.8);
+
+   --bg-highlight: rgba(0, 0, 0, 0.04);
+   --bg-elevated: #FFFFFF;
+   --bg-modal: #FFFFFF;
+   --accent-primary: #000000;
+   --accent-hover: #1f1f1f;
+
+   --text-primary: #121212;
+   /* High contrast black */
+   --text-secondary: rgba(0, 0, 0, 0.6);
+   --text-disabled: rgba(0, 0, 0, 0.25);
+   --text-metadata: rgba(0, 0, 0, 0.45);
+   --text-mono: #52525B;
+   /* Zinc 600 */
+
+   /* Molecules in light */
+   --mol-carbon: #262626;
+   --mol-oxygen: #ef4444;
+   --mol-nitrogen: #2563eb;
+   --mol-hydrogen: #e5e5e5;
+
+   /* Glass Elements Light */
+   --glass-blur: blur(40px) saturate(100%);
+   --glass-border: rgba(0, 0, 0, 0.06);
+   --border-subtle: 1px solid rgba(0, 0, 0, 0.06);
+   --border-divider: 1px solid rgba(0, 0, 0, 0.06);
+
+   --shadow-panel:
+      0 0 0 1px rgba(0, 0, 0, 0.04),
+      0 20px 40px -12px rgba(0, 0, 0, 0.08);
+
+   --shadow-elevated:
+      0 0 0 1px rgba(0, 0, 0, 0.04),
+      0 32px 64px -12px rgba(0, 0, 0, 0.12);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLOBAL RESETS & BASE STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+* {
+   box-sizing: border-box;
+}
+
+body {
+   margin: 0;
+   padding: 0;
+   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   background-color: var(--bg-canvas);
+   color: var(--text-primary);
+   transition:
+      background-color var(--transition-theme),
+      color var(--transition-theme);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLLBARS (Minimalist)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+   width: 6px;
+   height: 6px;
+}
+
+::-webkit-scrollbar-track {
+   background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+   background: var(--bg-highlight);
+   border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+   background: var(--text-disabled);
+}

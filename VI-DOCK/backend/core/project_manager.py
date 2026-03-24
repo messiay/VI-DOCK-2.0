@@ -46,6 +46,7 @@ class ProjectManager:
                 'ligands',
                 'results',
                 'docking_runs',
+                'md_simulations',
                 'temp',
                 'backups'
             ]

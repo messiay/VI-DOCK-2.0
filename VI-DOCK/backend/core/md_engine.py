@@ -14,16 +14,37 @@ try:
 except ImportError:
     OPENMM_AVAILABLE = False
 
+class ProgressReporter:
+    def __init__(self, callback, reportInterval):
+        self._callback = callback
+        self._reportInterval = reportInterval
+
+    def describeNextReport(self, simulation):
+        steps = self._reportInterval - simulation.currentStep % self._reportInterval
+        return (steps, True, False, False, True, False)
+
+    def report(self, simulation, state):
+        steps = simulation.currentStep
+        energy = state.getPotentialEnergy().value_in_unit(unit.kilocalories_per_mole)
+        msg = f"Step {steps} | Energy: {energy:.2f} kcal/mol"
+        self._callback(msg)
+
 class MDEngine:
     """
     Molecular Dynamics Engine using OpenMM.
     Provides methods for system preparation, minimization, and simulation.
     """
     
-    def __init__(self, working_dir: str = None):
+    def __init__(self, working_dir: str = None, status_callback: callable = None):
         self.working_dir = Path(working_dir) if working_dir else Path("md_temp")
         self.working_dir.mkdir(exist_ok=True, parents=True)
+        self.status_callback = status_callback
         self.simulation = None
+
+    def _log(self, message: str):
+        print(f"DEBUG: {message}")
+        if self.status_callback:
+            self.status_callback(message)
         
     def check_availability(self) -> Dict[str, Any]:
         """Check if OpenMM and dependencies are installed."""
@@ -45,18 +66,23 @@ class MDEngine:
             return {"success": False, "error": "OpenMM not installed"}
             
         try:
-            print(f"DEBUG: Preparing system with FF: {forcefield}, Water: {water_model}")
+            self._log(f"Preparing system for: {os.path.basename(pdb_path)}")
             # 1. Fix PDB
             fixer = PDBFixer(filename=pdb_path)
             fixer.removeWater() # Remove existing water to avoid template conflicts
+            
+            self._log("Fixing missing atoms and residues...")
             fixer.findMissingResidues()
             fixer.findNonstandardResidues()
             fixer.replaceNonstandardResidues()
             fixer.findMissingAtoms()
             fixer.addMissingAtoms()
+            
+            self._log("Adding missing hydrogens (pH 7.0)...")
             fixer.addMissingHydrogens(7.0) # pH 7.0
             
             # 2. Setup Forcefield
+            self._log(f"Loading Forcefield: {forcefield}")
             if water_model:
                 ff = ForceField(forcefield, water_model)
             else:
@@ -67,13 +93,15 @@ class MDEngine:
             
             # 4. Solvate
             if solvate:
+                self._log("Solvating system (adding water box and ions)...")
                 modeller.addSolvent(ff, padding=1.0*unit.nanometer, ionicStrength=0.15*unit.molar)
             
             # 5. Save prepared system
             prepared_pdb = self.working_dir / "prepared_system.pdb"
             with open(prepared_pdb, "w") as f:
                 PDBFile.writeFile(modeller.topology, modeller.positions, f)
-                
+            
+            self._log("System preparation complete.")
             return {
                 "success": True, 
                 "topology": modeller.topology,
@@ -82,6 +110,7 @@ class MDEngine:
                 "prepared_pdb": str(prepared_pdb)
             }
         except Exception as e:
+            self._log(f"Preparation Failed: {str(e)}")
             return {"success": False, "error": str(e), "traceback": traceback.format_exc()}
 
     def run_simulation(self,
@@ -99,6 +128,7 @@ class MDEngine:
         """
         try:
             # 1. Create System
+            self._log("Creating OpenMM System object...")
             system = forcefield.createSystem(topology, 
                                              nonbondedMethod=app.PME, 
                                              nonbondedCutoff=1.0*unit.nanometer,
@@ -113,7 +143,9 @@ class MDEngine:
             
             # 4. Minimize
             if minimize:
+                self._log("Running Energy Minimization...")
                 simulation.minimizeEnergy()
+                self._log("Minimization Complete.")
                 
             # 5. Reporters
             dcd_path = self.working_dir / f"{output_prefix}.dcd"
@@ -125,14 +157,20 @@ class MDEngine:
                                                             step=True, potentialEnergy=True, 
                                                             temperature=True))
             
+            # Live Console Reporter
+            if self.status_callback:
+                simulation.reporters.append(ProgressReporter(self.status_callback, report_interval))
+            
             # 6. Production Run
+            self._log(f"Starting Production MD ({total_steps} steps)...")
             simulation.step(total_steps)
             
             # 7. Save Final State
             state = simulation.context.getState(getPositions=True)
             with open(pdb_path, "w") as f:
                 PDBFile.writeFile(topology, state.getPositions(), f)
-                
+            
+            self._log("Simulation Complete.")
             return {
                 "success": True,
                 "dcd": str(dcd_path),
@@ -140,4 +178,5 @@ class MDEngine:
                 "log": str(log_path)
             }
         except Exception as e:
+            self._log(f"Simulation Failed: {str(e)}")
             return {"success": False, "error": str(e), "traceback": traceback.format_exc()}

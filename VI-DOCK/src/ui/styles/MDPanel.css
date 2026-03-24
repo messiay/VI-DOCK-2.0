@@ -130,3 +130,103 @@
   justify-content: center;
   gap: 5px;
 }
+
+/* New Modern Console & Banner Styles */
+.md-selection-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(30, 215, 96, 0.05); /* Subtle green */
+  border: 1px solid rgba(30, 215, 96, 0.2);
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
+
+.banner-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #51cf66;
+}
+
+.clear-selection {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-selection:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.md-console {
+  margin-top: 15px;
+  background: #0d1117;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.console-header {
+  background: #161b22;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.console-body {
+  height: 150px;
+  overflow-y: auto;
+  padding: 10px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.console-line {
+  color: #e6edf3;
+  word-break: break-all;
+}
+
+.console-line.error {
+  color: #ff7b72;
+}
+
+.console-line .timestamp {
+  color: #8b949e;
+  margin-right: 8px;
+  font-size: 0.7rem;
+}
+
+/* Custom Scrollbar for Console */
+.console-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.console-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.console-body::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 3px;
+}

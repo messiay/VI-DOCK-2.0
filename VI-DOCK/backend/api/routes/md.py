@@ -17,6 +17,11 @@ def run_md_task(job_id: str, config: MDConfig, project_path: str):
     print(f"DEBUG: Starting MD task {job_id}...")
     try:
         md_jobs[job_id]["status"] = "running"
+        md_jobs[job_id]["progress_log"] = "Job initialized..."
+        
+        def status_cb(msg):
+            md_jobs[job_id]["progress_log"] = msg
+
         project_path_obj = Path(project_path)
         
         # 1. Resolve PDB Path
@@ -43,10 +48,9 @@ def run_md_task(job_id: str, config: MDConfig, project_path: str):
         md_dir.mkdir(exist_ok=True, parents=True)
         
         # 3. Initialize Engine
-        engine = MDEngine(working_dir=str(md_dir))
+        engine = MDEngine(working_dir=str(md_dir), status_callback=status_cb)
         
         # 4. Prepare System
-        print(f"DEBUG: Preparing system for {job_id}...")
         prep_res = engine.prepare_system(
             pdb_path,
             forcefield=config.forcefield,

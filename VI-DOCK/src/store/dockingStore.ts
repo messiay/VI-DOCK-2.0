@@ -75,6 +75,9 @@ interface DockingStore extends DockingState {
     mdParams: MDParams;
     setMDParams: (params: Partial<MDParams>) => void;
 
+    mdInputFile: MoleculeFile | null;
+    setMDInputFile: (file: MoleculeFile | null) => void;
+
     startOver: () => void;
 }
 
@@ -109,6 +112,7 @@ export const useDockingStore = create<DockingStore>()(
 
             // MD defaults
             mdParams: { ...defaultMDParams },
+            mdInputFile: null,
 
             // Actions
             setReceptorFile: (file) => set({ receptorFile: file, result: null, selectedPose: 0 }),
@@ -147,6 +151,8 @@ export const useDockingStore = create<DockingStore>()(
             setMDParams: (params) => set((state: any) => ({
                 mdParams: { ...state.mdParams, ...params }
             })),
+
+            setMDInputFile: (file) => set({ mdInputFile: file }),
 
             startOver: () => set({
                 receptorFile: null,

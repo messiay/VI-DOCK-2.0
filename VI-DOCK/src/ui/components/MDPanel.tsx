@@ -19,6 +19,8 @@ export function MDPanel() {
         mdParams, 
         setMDParams, 
         receptorFile, 
+        mdInputFile,
+        setMDInputFile,
         setStatusMessage,
         setRunning
     } = useDockingStore();
@@ -26,35 +28,44 @@ export function MDPanel() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [taskStatus, setTaskStatus] = useState<'idle' | 'running' | 'completed' | 'failed'>('idle');
     const [error, setError] = useState<string | null>(null);
+    const [logs, setLogs] = useState<string[]>([]);
 
     // Guard: wait for Zustand persist rehydration
     if (!mdParams) return null;
 
     const handleRunMD = async () => {
-        if (!receptorFile) {
-            setError("Please upload a receptor file first.");
+        // Use mdInputFile (docked complex) if available, otherwise fallback to receptor
+        const activeFile = mdInputFile || receptorFile;
+
+        if (!activeFile) {
+            setError("Please upload a receptor file or select a docking pose first.");
             return;
         }
 
         setIsSubmitting(true);
         setError(null);
+        setLogs([`[SYSTEM] Initializing MD for: ${activeFile.name}...`]);
+        if (mdInputFile) {
+            setLogs(prev => [...prev, "[SYSTEM] SOURCE: Docked Protein-Ligand Complex"]);
+        }
         setTaskStatus('running');
         setStatusMessage("Initializing Molecular Dynamics...");
 
         try {
-            // 0. Auto-create project and upload receptor to backend
+            // 0. Auto-create project and upload file to backend
             const timestamp = new Date().getTime();
             const projectName = `MD_Sim_${timestamp}`;
             
-            setStatusMessage("Creating backend project...");
+            setLogs(prev => [...prev, "[SYSTEM] Creating project folder on Colab..."]);
             await apiService.createProject(projectName);
             
-            setStatusMessage("Uploading receptor to Colab...");
-            const receptorBlob = new Blob([receptorFile.content], { type: 'text/plain' });
-            const receptorFileObj = new File([receptorBlob], receptorFile.name, { type: 'text/plain' });
-            await apiService.uploadFile(projectName, receptorFileObj, 'receptor');
+            setLogs(prev => [...prev, `[SYSTEM] Uploading ${activeFile.name}...`]);
+            const fileBlob = new Blob([activeFile.content], { type: 'text/plain' });
+            const fileObj = new File([fileBlob], activeFile.name, { type: 'text/plain' });
+            await apiService.uploadFile(projectName, fileObj, 'receptor');
 
             // 1. Submit Job to Colab Backend
+            setLogs(prev => [...prev, "[SYSTEM] Submitting MD Job to FastAPI..."]);
             const response = await fetch(`${apiConfig.API_BASE_URL}/md/${projectName}/run`, {
                 method: 'POST',
                 headers: { 
@@ -62,7 +73,7 @@ export function MDPanel() {
                     'Bypass-Tunnel-Reminder': 'true' 
                 },
                 body: JSON.stringify({
-                    pdb_file: receptorFile.name,
+                    pdb_file: activeFile.name,
                     forcefield: mdParams.forcefield,
                     // Avoid redundancy conflict if using -all forcefield
                     water_model: mdParams.forcefield.includes('-all') ? '' : mdParams.waterModel,
@@ -81,6 +92,7 @@ export function MDPanel() {
             }
 
             const data = await response.json();
+            setLogs(prev => [...prev, `[SYSTEM] Job started successfully (ID: ${data.job_id})`]);
             setRunning(true);
             
             // 2. Start polling for status
@@ -88,6 +100,7 @@ export function MDPanel() {
 
         } catch (err: any) {
             setError(err.message);
+            setLogs(prev => [...prev, `[ERROR] ${err.message}`]);
             setTaskStatus('failed');
             setRunning(false);
         } finally {
@@ -107,14 +120,26 @@ export function MDPanel() {
                     setTaskStatus('completed');
                     setRunning(false);
                     setStatusMessage("MD Simulation Completed!");
+                    setLogs(prev => [...prev, "[SUCCESS] Simulation finished successfully."]);
                     clearInterval(interval);
                 } else if (data.status === 'failed') {
                     setTaskStatus('failed');
                     setError(data.error);
+                    setLogs(prev => [...prev, `[FATAL] ${data.error}`]);
                     setRunning(false);
                     clearInterval(interval);
                 } else {
                     setStatusMessage(`MD Simulation: ${data.status}...`);
+                    // If backend provides logs in the status data, add them
+                    if (data.progress_log) {
+                        setLogs(prev => {
+                            const newLog = data.progress_log;
+                            if (prev[prev.length - 1] !== newLog) {
+                                return [...prev, newLog];
+                            }
+                            return prev;
+                        });
+                    }
                 }
             } catch (err) {
                 console.error("Polling error:", err);
@@ -124,6 +149,18 @@ export function MDPanel() {
 
     return (
         <div className="md-panel">
+            {mdInputFile && (
+                <div className="md-selection-banner">
+                    <div className="banner-info">
+                        <CheckCircle2 size={16} />
+                        <span>Ready to simulate <b>Docked Complex</b> ({mdInputFile.name})</span>
+                    </div>
+                    <button className="clear-selection" onClick={() => setMDInputFile(null)}>
+                        Clear & Use Original Receptor
+                    </button>
+                </div>
+            )}
+
             <div className="panel-section">
                 <h3 className="section-title"><Settings size={16} /> Forcefield Settings</h3>
                 <div className="input-group">
@@ -232,6 +269,21 @@ export function MDPanel() {
                     <><Zap size={18} /> Launch MD Simulation</>
                 )}
             </button>
+
+            {logs.length > 0 && (
+                <div className="md-console">
+                    <div className="console-header">
+                        <Database size={14} /> <span>Simulation Console</span>
+                    </div>
+                    <div className="console-body">
+                        {logs.map((log, i) => (
+                            <div key={i} className={`console-line ${log.startsWith('[ERROR]') || log.startsWith('[FATAL]') ? 'error' : ''}`}>
+                                <span className="timestamp">[{new Date().toLocaleTimeString()}]</span> {log}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
             
             <p className="md-note">
                 <Database size={12} /> Note: MD runs on Colab GPU. Results will appear in the results folder once finished.

@@ -25,7 +25,7 @@ function pdbqtToPdb(pdbqt: string): string {
 }
 
 export function OutputPanel() {
-    const { result, selectedPose, setSelectedPose, receptorFile } = useDockingStore();
+    const { result, selectedPose, setSelectedPose, receptorFile, setMDInputFile, setActiveTab } = useDockingStore();
 
     if (!result) {
         return (
@@ -38,6 +38,20 @@ export function OutputPanel() {
             </div>
         );
     }
+
+    const handleLaunchMD = (index: number) => {
+        const pose = result.poses[index];
+        const combinedContent = (receptorFile?.content ? receptorFile.content + '\n' : '') + pose.pdbqt;
+        const pdbContent = pdbqtToPdb(combinedContent);
+        
+        setMDInputFile({
+            name: `complex_pose_${pose.mode}.pdb`,
+            content: pdbContent,
+            format: 'pdb'
+        });
+        
+        setActiveTab('md');
+    };
 
     const handleDownload = (type: 'pdbqt' | 'pdb' | 'log' | 'all' | 'csv') => {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -104,6 +118,7 @@ export function OutputPanel() {
                                 <th>Affinity</th>
                                 <th>RMSD l.b.</th>
                                 <th>RMSD u.b.</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -125,6 +140,15 @@ export function OutputPanel() {
                                     </td>
                                     <td className="rmsd-col">
                                         {pose.rmsdUB.toFixed(1)}
+                                    </td>
+                                    <td className="action-col">
+                                        <button 
+                                            className="action-btn md-btn"
+                                            onClick={(e) => { e.stopPropagation(); handleLaunchMD(index); }}
+                                            title="Run MD Simulation on this pose"
+                                        >
+                                            🧪 MD
+                                        </button>
                                     </td>
                                 </tr>
                             ))}

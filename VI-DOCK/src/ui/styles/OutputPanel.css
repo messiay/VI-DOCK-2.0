@@ -332,3 +332,47 @@
     margin: 0;
     font-size: 0.95rem;
 }
+
+/* Action Button Styles */
+.action-col {
+    width: 80px;
+    text-align: center;
+}
+
+.action-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.md-btn {
+    background: rgba(30, 215, 96, 0.1); /* Spotify-style green breath */
+    color: #51cf66;
+    border-color: rgba(81, 207, 102, 0.2);
+}
+
+.md-btn:hover {
+    background: #51cf66;
+    color: #000;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(81, 207, 102, 0.3);
+}
+
+/* Row Active State Overrides for Buttons */
+.pro-table tr.active .md-btn {
+    background: rgba(0, 0, 0, 0.1);
+    color: #000;
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.pro-table tr.active .md-btn:hover {
+    background: #000;
+    color: #fff;
+}

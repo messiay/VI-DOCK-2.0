@@ -1,0 +1,3 @@
+Receptor,Ligand,Mode,Affinity (kcal/mol),RMSD L.B.,RMSD U.B.,id,session_id,receptor,ligand,mode,affinity,rmsd_lb,rmsd_ub,output_file,OutputFile
+rec1.pdbqt,lig1.pdbqt,1,-9.5,0.0,0.0,1,1,rec1.pdbqt,lig1.pdbqt,1,-9.5,0.0,0.0,out1.pdbqt,out1.pdbqt
+rec1.pdbqt,lig1.pdbqt,2,-8.5,2.0,3.0,2,1,rec1.pdbqt,lig1.pdbqt,2,-8.5,2.0,3.0,out1.pdbqt,out1.pdbqt

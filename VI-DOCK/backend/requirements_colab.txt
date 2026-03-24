@@ -1,0 +1,11 @@
+streamlit
+pandas
+py3Dmol
+stmol
+pyngrok
+rdkit
+meeko
+scipy
+numpy
+networkx
+ipywidgets>=7.7.1

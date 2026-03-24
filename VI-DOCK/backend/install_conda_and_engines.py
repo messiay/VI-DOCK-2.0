@@ -90,9 +90,6 @@ def install_engines(conda_cmd):
         "install",
         "-c", "conda-forge",
         "smina",
-        "openmm",
-        "pdbfixer",
-        "mdtraj",
         "python=3.10",
         "-y"
     ]

@@ -67,7 +67,7 @@ print(f"✅ Backend started (PID {server.pid})")
 
 ## 3. Expose with Cloudflare Tunnel
 
-Run this to get your public API URL.
+Run this to get your public API URL. If the URL doesn't appear in 30 seconds, check the logs below manually.
 
 ```python
 import subprocess, threading, time, re
@@ -82,20 +82,25 @@ def run_tunnel():
         stderr=subprocess.STDOUT,
         text=True
     )
+    print("Starting tunnel... logs will appear below:")
     for line in proc.stdout:
+        print(line, end="") # Direct log feedback
         match = re.search(r"https://[\w-]+\.trycloudflare\.com", line)
         if match:
             tunnel_url = match.group(0)
-            print(f"\n🌐 YOUR BACKEND URL: {tunnel_url}")
+            print(f"\n{'='*60}")
+            print(f"✅ YOUR PUBLIC API URL: {tunnel_url}")
+            print(f"{'='*60}")
             break
 
 threading.Thread(target=run_tunnel, daemon=True).start()
 
-# Wait for URL
-for _ in range(30):
+# Wait for URL and show status
+for i in range(30):
     if tunnel_url: break
+    if i % 5 == 0: print(f"Waiting for tunnel... ({i}s)")
     time.sleep(1)
 
 if not tunnel_url:
-    print("⚠️ Tunnel failed. Check Cloudflare logs.")
+    print("\n⚠️ URL not detected automatically. Please check the logs above manually for a 'trycloudflare.com' link.")
 ```

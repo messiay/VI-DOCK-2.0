@@ -35,7 +35,7 @@ class MDEngine:
     def prepare_system(self, 
                        pdb_path: str, 
                        forcefield: str = 'amber14-all.xml', 
-                       water_model: str = 'amber14/tip3p.xml',
+                       water_model: str = None, # Default to None as amber14-all includes TIP3P
                        solvate: bool = True,
                        add_ions: bool = True) -> Dict[str, Any]:
         """
@@ -45,6 +45,7 @@ class MDEngine:
             return {"success": False, "error": "OpenMM not installed"}
             
         try:
+            print(f"DEBUG: Preparing system with FF: {forcefield}, Water: {water_model}")
             # 1. Fix PDB
             fixer = PDBFixer(filename=pdb_path)
             fixer.findMissingResidues()
@@ -55,7 +56,10 @@ class MDEngine:
             fixer.addMissingHydrogens(7.0) # pH 7.0
             
             # 2. Setup Forcefield
-            ff = ForceField(forcefield, water_model)
+            if water_model:
+                ff = ForceField(forcefield, water_model)
+            else:
+                ff = ForceField(forcefield)
             
             # 3. Create Modeller
             modeller = Modeller(fixer.topology, fixer.positions)

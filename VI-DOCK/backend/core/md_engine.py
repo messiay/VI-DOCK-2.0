@@ -67,8 +67,20 @@ class MDEngine:
             
         try:
             self._log(f"Preparing system for: {os.path.basename(pdb_path)}")
+            
+            # --- pre-clean PDB of malformed waters ---
+            with open(pdb_path, 'r') as f:
+                lines = f.readlines()
+            clean_pdb_path = str(self.working_dir / "cleaned_input.pdb")
+            with open(clean_pdb_path, 'w') as f:
+                for line in lines:
+                    if line.startswith("HETATM") or line.startswith("ATOM"):
+                        if "HOH" in line or "WAT" in line:
+                            continue
+                    f.write(line)
+            
             # 1. Fix PDB
-            fixer = PDBFixer(filename=pdb_path)
+            fixer = PDBFixer(filename=clean_pdb_path)
             
             self._log("Fixing missing atoms and residues...")
             fixer.findMissingResidues()

@@ -80,8 +80,7 @@ export function MDPanel() {
                 body: JSON.stringify({
                     pdb_file: activeFile.name,
                     forcefield: mdParams.forcefield,
-                    // Avoid redundancy conflict if using -all forcefield
-                    water_model: mdParams.forcefield.includes('-all') ? '' : mdParams.waterModel,
+                    water_model: mdParams.waterModel,
                     solvate: mdParams.solvate,
                     add_ions: mdParams.addIons,
                     temp_k: mdParams.tempK,

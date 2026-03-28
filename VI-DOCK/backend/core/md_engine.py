@@ -155,8 +155,8 @@ class MDEngine:
             
             # 4. Minimize
             if minimize:
-                self._log("Running Energy Minimization...")
-                simulation.minimizeEnergy()
+                self._log("Running Energy Minimization (Max 500 steps to prevent hanging)...")
+                simulation.minimizeEnergy(maxIterations=500)
                 self._log("Minimization Complete.")
                 
             # 5. Reporters

@@ -1,5 +1,5 @@
 export const config = {
-    API_BASE_URL: 'https://clusters-specialist-phillips-tampa.trycloudflare.com',
+    API_BASE_URL: 'https://entities-julian-verified-trio.trycloudflare.com',
     ENDPOINTS: {
         PROJECTS: '/projects',
         DOCKING: '/docking',

@@ -1,5 +1,5 @@
 export const config = {
-    API_BASE_URL: 'https://optimization-seek-zealand-css.trycloudflare.com/',
+    API_BASE_URL: 'https://referred-dream-surname-hammer.trycloudflare.com',
     ENDPOINTS: {
         PROJECTS: '/projects',
         DOCKING: '/docking',

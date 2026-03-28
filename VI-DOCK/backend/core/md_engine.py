@@ -69,7 +69,6 @@ class MDEngine:
             self._log(f"Preparing system for: {os.path.basename(pdb_path)}")
             # 1. Fix PDB
             fixer = PDBFixer(filename=pdb_path)
-            fixer.removeWater() # Remove existing water to avoid template conflicts
             
             self._log("Fixing missing atoms and residues...")
             fixer.findMissingResidues()
@@ -93,7 +92,8 @@ class MDEngine:
             
             # 4. Solvate
             if solvate:
-                self._log("Solvating system (adding water box and ions)...")
+                self._log("Cleaning existing water and solvating...")
+                modeller.deleteWater() # Always remove existing water to avoid template issues
                 modeller.addSolvent(ff, padding=1.0*unit.nanometer, ionicStrength=0.15*unit.molar)
             
             # 5. Save prepared system

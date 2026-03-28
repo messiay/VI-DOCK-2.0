@@ -149,8 +149,24 @@ class MDEngine:
             # 2. Setup Integrator
             integrator = LangevinMiddleIntegrator(temp_k*kelvin, 1/picosecond, step_size_fs*unit.femtoseconds)
             
-            # 3. Setup Simulation
-            simulation = Simulation(topology, system, integrator)
+            # 3. Setup Simulation and Platform Selection
+            from openmm import Platform
+            platform = None
+            for p_name in ['CUDA', 'OpenCL', 'CPU']:
+                try:
+                    platform = Platform.getPlatformByName(p_name)
+                    self._log(f"Selected Platform: {p_name}")
+                    break
+                except Exception:
+                    pass
+            
+            if platform:
+                simulation = Simulation(topology, system, integrator, platform)
+                self._log(f"Selected Platform: {platform.getName()}")
+            else:
+                simulation = Simulation(topology, system, integrator)
+                self._log(f"Selected Platform: {simulation.context.getPlatform().getName()}")
+            
             simulation.context.setPositions(positions)
             
             # 4. Minimize

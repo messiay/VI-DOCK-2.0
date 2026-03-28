@@ -78,6 +78,11 @@ interface DockingStore extends DockingState {
     mdInputFile: MoleculeFile | null;
     setMDInputFile: (file: MoleculeFile | null) => void;
 
+    mdResults: any[];
+    addMDResult: (result: any) => void;
+    lastMDJobId: string | null;
+    setLastMDJobId: (id: string | null) => void;
+
     startOver: () => void;
 }
 
@@ -113,6 +118,8 @@ export const useDockingStore = create<DockingStore>()(
             // MD defaults
             mdParams: { ...defaultMDParams },
             mdInputFile: null,
+            mdResults: [],
+            lastMDJobId: null,
 
             // Actions
             setReceptorFile: (file) => set({ receptorFile: file, result: null, selectedPose: 0 }),
@@ -154,6 +161,11 @@ export const useDockingStore = create<DockingStore>()(
 
             setMDInputFile: (file) => set({ mdInputFile: file }),
 
+            addMDResult: (result) => set((state) => ({ 
+                mdResults: [result, ...state.mdResults] 
+            })),
+            setLastMDJobId: (lastMDJobId) => set({ lastMDJobId }),
+
             startOver: () => set({
                 receptorFile: null,
                 ligandFile: null,
@@ -171,6 +183,9 @@ export const useDockingStore = create<DockingStore>()(
                 showBox: true,
                 showGrid: true,
                 showAxes: true,
+                mdInputFile: null,
+                mdResults: [],
+                lastMDJobId: null,
             }),
 
             // View Actions
@@ -199,6 +214,7 @@ export const useDockingStore = create<DockingStore>()(
                 showGrid: state.showGrid,
                 showAxes: state.showAxes,
                 theme: state.theme,
+                mdResults: state.mdResults,
             }),
             version: 3, // Clear old state to ensure Landing Screen loads
         }

@@ -137,6 +137,57 @@ def get_md_job_status(job_id: str):
         raise HTTPException(status_code=404, detail="Job not found")
     return md_jobs[job_id]
 
+@router.get("/jobs/{job_id}/log")
+def get_md_job_log(job_id: str, pm = Depends(get_project_manager)):
+    """Fetch parsed MD simulation log data."""
+    if job_id not in md_jobs:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    job = md_jobs[job_id]
+    if job.get("status") != "completed" and "files" not in job:
+        raise HTTPException(status_code=400, detail="Job not completed yet")
+    
+    from api.dependencies import find_project_path
+    project_path = find_project_path(job["project_name"])
+    if not project_path:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    log_rel_path = job["files"].get("log")
+    if not log_rel_path:
+        raise HTTPException(status_code=404, detail="Log file missing from job data")
+
+    log_path = project_path / log_rel_path
+    if not log_path.exists():
+        raise HTTPException(status_code=404, detail=f"Log file not found on disk: {log_path}")
+
+    # Parse OpenMM StateDataReporter CSV
+    import csv
+    data = []
+    try:
+        with open(log_path, 'r') as f:
+            # Skip comments/header prefix if needed (OpenMM starts with #)
+            lines = f.readlines()
+            # Clean up the # prefix from header
+            if lines and lines[0].startswith('#"'):
+                lines[0] = lines[0].replace('#"', '"').replace('",#', '",')
+            elif lines and lines[0].startswith('#Step'):
+                lines[0] = lines[0].replace('#Step', 'Step')
+            
+            reader = csv.DictReader(lines)
+            for row in reader:
+                # Convert values to numbers
+                clean_row = {}
+                for k, v in row.items():
+                    try:
+                        clean_row[k.strip('#" ')] = float(v)
+                    except:
+                        clean_row[k.strip('#" ')] = v
+                data.append(clean_row)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to parse log: {str(e)}")
+
+    return {"data": data}
+
 @router.get("/jobs")
 def list_md_jobs():
     """List all MD jobs."""

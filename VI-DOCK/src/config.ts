@@ -1,5 +1,5 @@
 export const config = {
-    API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://manufacturing-herself-syndication-efficiently.trycloudflare.com',
+    API_BASE_URL: 'https://optimization-seek-zealand-css.trycloudflare.com/',
     ENDPOINTS: {
         PROJECTS: '/projects',
         DOCKING: '/docking',

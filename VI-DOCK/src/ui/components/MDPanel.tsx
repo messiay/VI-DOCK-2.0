@@ -8,10 +8,12 @@ import {
     Database,
     AlertCircle,
     CheckCircle2,
-    Loader2
+    Loader2,
+    BarChart3
 } from 'lucide-react';
 import { config as apiConfig } from '../../config';
 import { apiService } from '../../services/apiService';
+import { MDResultViewer } from './MDResultViewer';
 import '../styles/MDPanel.css';
 
 export function MDPanel() {
@@ -22,7 +24,10 @@ export function MDPanel() {
         mdInputFile,
         setMDInputFile,
         setStatusMessage,
-        setRunning
+        setRunning,
+        addMDResult,
+        lastMDJobId,
+        setLastMDJobId
     } = useDockingStore();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -94,6 +99,7 @@ export function MDPanel() {
             const data = await response.json();
             setLogs(prev => [...prev, `[SYSTEM] Job started successfully (ID: ${data.job_id})`]);
             setRunning(true);
+            setLastMDJobId(data.job_id); // Save ID for result viewing
             
             // 2. Start polling for status
             pollStatus(data.job_id);
@@ -121,6 +127,11 @@ export function MDPanel() {
                     setRunning(false);
                     setStatusMessage("MD Simulation Completed!");
                     setLogs(prev => [...prev, "[SUCCESS] Simulation finished successfully."]);
+                    
+                    // Harvest results: map relative paths to full static URLs if possible
+                    // However, we just save the record to the store
+                    addMDResult(data);
+                    
                     clearInterval(interval);
                 } else if (data.status === 'failed') {
                     setTaskStatus('failed');
@@ -130,13 +141,10 @@ export function MDPanel() {
                     clearInterval(interval);
                 } else {
                     setStatusMessage(`MD Simulation: ${data.status}...`);
-                    // If backend provides logs in the status data, add them
                     if (data.progress_log) {
                         setLogs(prev => {
                             const newLog = data.progress_log;
-                            if (prev[prev.length - 1] !== newLog) {
-                                return [...prev, newLog];
-                            }
+                            if (prev[prev.length - 1] !== newLog) return [...prev, newLog];
                             return prev;
                         });
                     }
@@ -146,6 +154,32 @@ export function MDPanel() {
             }
         }, 5000);
     };
+
+    if (lastMDJobId) {
+        return (
+            <div className="md-panel">
+                <button className="clear-selection" onClick={() => setLastMDJobId(null)} style={{ marginBottom: '10px' }}>
+                    <BarChart3 size={14} /> New Simulation
+                </button>
+                <MDResultViewer jobId={lastMDJobId} />
+                
+                {logs.length > 0 && (
+                    <div className="md-console">
+                        <div className="console-header">
+                            <Database size={14} /> <span>Simulation Console</span>
+                        </div>
+                        <div className="console-body">
+                            {logs.map((log, i) => (
+                                <div key={i} className={`console-line ${log.startsWith('[ERROR]') || log.startsWith('[FATAL]') ? 'error' : ''}`}>
+                                    <span className="timestamp">[{new Date().toLocaleTimeString()}]</span> {log}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    }
 
     return (
         <div className="md-panel">
@@ -254,7 +288,7 @@ export function MDPanel() {
             {taskStatus === 'completed' && (
                 <div className="success-banner">
                     <CheckCircle2 size={16} />
-                    <span>Simulation complete. View results in History.</span>
+                    <span>Simulation complete. Analysis dashboard ready.</span>
                 </div>
             )}
 
@@ -269,24 +303,9 @@ export function MDPanel() {
                     <><Zap size={18} /> Launch MD Simulation</>
                 )}
             </button>
-
-            {logs.length > 0 && (
-                <div className="md-console">
-                    <div className="console-header">
-                        <Database size={14} /> <span>Simulation Console</span>
-                    </div>
-                    <div className="console-body">
-                        {logs.map((log, i) => (
-                            <div key={i} className={`console-line ${log.startsWith('[ERROR]') || log.startsWith('[FATAL]') ? 'error' : ''}`}>
-                                <span className="timestamp">[{new Date().toLocaleTimeString()}]</span> {log}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
             
             <p className="md-note">
-                <Database size={12} /> Note: MD runs on Colab GPU. Results will appear in the results folder once finished.
+                <Database size={12} /> Note: MD runs on Colab GPU. Results persist in the database.
             </p>
         </div>
     );
